@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html>
 
 <h1>Create Content page</h1>    
@@ -29,4 +30,37 @@
 
     </fieldset>
 </form>
+=======
+<html>
+
+<h1>Create Content page</h1>    
+
+<p>create content part</p>
+
+<form method="POST" action="/new_content">
+
+    <fieldset>
+
+        <legend>publish content</legend>
+
+        <label>Topic Number:</label>
+        <input type="text" name="topic_no"><br><br>
+
+        <label>Topic Name:</label>
+        <input type="text" name="topic_name"><br><br>
+
+        <label>Body(content):</label><br>
+        <textarea name="content" rows="20" cols="70"></textarea><br><br>
+
+        <label>example status</label>
+        <select name="example">
+            <option value="available">Available</option>
+            <option value="none">None</option>
+        </select><br><br>
+
+        <button type="submit">Publish</button>
+
+    </fieldset>
+</form>
+>>>>>>> cdc4812e5ac1c2bb0bebdae127a81d6aadf37d59
 </html>

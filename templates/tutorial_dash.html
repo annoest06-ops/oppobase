@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html>
 
 <body>
@@ -27,4 +28,35 @@
     </form>
 
 </body>
+=======
+<html>
+
+<body>
+
+    <h1>tutorial page</h1><br><br>
+
+    <form action="/tuto_dash" method="POST">
+
+        <fieldset>
+            <legend>tutorials</legend>
+
+            <p>Select the tutorial</p><br><br>
+
+            {%if tp_check%}
+            {%for sum in tp_check%}
+
+            <input type="radio" name="topic_ref" value="{{sum.id}}">{{sum.id  }} {{ sum.topic_name}}<br><br>
+            
+
+            {%endfor%}
+            {%endif%}
+
+            <button type="submit">select</button>
+        </fieldset>
+
+        
+    </form>
+
+</body>
+>>>>>>> cdc4812e5ac1c2bb0bebdae127a81d6aadf37d59
 </html>
