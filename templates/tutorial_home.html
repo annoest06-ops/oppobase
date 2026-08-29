@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Use standard dictionary brackets to read the topic name -->
+    <title>{{ content_data['topic_name'] }}</title>
+</head>
+<body>
+
+    <!-- A simple link to let the user go back to the selection list -->
+    <a href="/tuto_dash">← Back to Dashboard</a>
+    <hr>
+
+    <h1>Topic {{ content_data['topic_number'] }}: {{ content_data['topic_name'] }}</h1>
+    
+    <div style="margin-top: 20px; font-size: 1.2em; line-height: 1.6;">
+        <!-- This prints out the actual body text of your tutorial -->
+        {{ content_data['content_body'] }}
+    </div>
+
+</body>
+</html>
