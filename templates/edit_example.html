@@ -1,0 +1,100 @@
+<html>
+
+<body>
+
+    <h1>Edit example</h1><br><br>
+
+     <form action="/update_example" method="POST">
+        <fieldset>
+     <label>Search topic name:</label>
+            <select name="topic_name">
+                {%if eg_name%}
+                      {%for name in eg_name%}
+
+                 
+
+                <option>Topic name</option>
+                <option value="{{name.topic_name}}">{{name.topic_name}}</option>
+                
+                {%endfor%}
+                {%endif%}
+
+            </select><br><br>
+
+             <label>Search example number:</label>
+            <select name="example_number">
+                <option>example number</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+
+            </select><br><br>
+
+            <button type="submit" name="action" value="search_example">search</button>
+    </fieldset>
+    </form><br><br>
+
+    
+    <form action="/update_example" method="POST">
+        <fieldset>
+
+            <legend>Edit example</legend>
+            
+            <label>Topic</label>
+            {%if eg_value%}
+              
+            <select name="topic">
+                <option>Topic name</option>
+                <option value="{{eg_value.topic_id}}">{{eg_value.topic_id}}</option>
+            </select><br><br>
+
+            <label>Name:</label>
+            <input type="text" name="eg_name" value="{{eg_value.name}}"><br><br>
+
+            <label>Country</label>
+            <select name="country">
+                <option value="{{eg_value.country}}">{{eg_value.country}}</option>
+            
+
+            </select><br><br>
+
+            <label>Applying to</label>
+            <input type="text" name="apply_to" value="{{eg_value.college}}"><br><br>
+
+            <label>Skills</label>
+            <input type="text" name="skills" width="20" value="{{eg_value.skills}}"><br><br>
+
+            <label>Achievements</label><br>
+            <textarea name="achieve"  rows="10" cols="40">{{eg_value.achieves}}</textarea><br><br>
+
+            <label>Avatar</label>
+            <input type="text" name="avatar" value="{{eg_value.avatar}}"><br><br>
+
+            <label>Question</label><br>
+            <textarea rows="20" cols="70">{{eg_value.question}}</textarea><br><br>
+
+            <label>Response</label><br>
+            <textarea rows="20" cols="70">{{eg_value.response}}</textarea><br><br>
+
+            <label>word count</label>
+            <input type="number" name="word_count" value="eg_value.word_count"><br><br>
+
+            <label>example number</label>
+            <select name="eg_no">
+                <option value="{{eg_value.example_no}}">{{eg_value.example_no}}</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+
+            </select><br><br>
+
+            <label>Comment</label><br>
+            <textarea name="comment" rows="10" cols="40">{{eg_value.comment}}</textarea><br><br>
+
+            <button type="submit">Update</button>
+
+         {%endif%}
+        </fieldset>
+    </form>
+
+
+</body>
+</html>
