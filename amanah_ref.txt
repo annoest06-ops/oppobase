@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from flask import Flask,request,redirect,url_for,session,render_template
 import psycopg2
 from psycopg2.extras import RealDictCursor

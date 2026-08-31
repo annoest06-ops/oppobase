@@ -5,7 +5,7 @@
 
     <h1>publish new scholarship</h1><br><br>
 
-    <form>
+    <form action="/scholarship" method="POST">
 
         <fieldset>
             <legend>new scholarship</legend>
@@ -14,7 +14,7 @@
             <input type="text" name="title"><br><br>
 
             <label>deadline</label><br>
-            <input type="datetime" name="deadline"><br><br>
+            <input type="datetime-local" name="deadline"><br><br>
 
             <label>location</label><br>
             <input type="text" name="location"><br><br>
@@ -24,6 +24,8 @@
 
             <label>comment</label><br>
             <textarea name="comment"></textarea><br><br>
+
+            <button type="submit">post</button>
 
             
         </fieldset>
