@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <html>
 
 <body>
@@ -64,71 +64,5 @@
         </fieldset>
     </form>
 </body>
-=======
-<html>
 
-<body>
-
-    <h1>Edit content</h1><br><br>
-
-    <form action="/edit_content" method="POST">
-        <fieldset>
-          
-     <label>Search topic name:</label>
-            <select name="topic_name">
-                <option>Topic name</option>
-
-                  {%if search_name%}
-
-            {%for names in search_name%}
-                <option value="{{names.topic_name}}">{{names.topic_name}}</option>
-            
-                {%endfor%}
-            {%endif%}
-
-            </select><br><br>
-            
-
-            <button type="submit" name="action" value="search_by_name">search</button>
-    </fieldset>
-    </form><br><br>
-
-    <form action="/edit_content" method="POST">
-        <fieldset>
-
-            {%if content%}
-
-
-            <legend>Edit content</legend>
-            
-            <label >content ID:{{content.id}}</label><br><br>
-
-            <input type="hidden" name="content_id" value="{{content.id}}"><br><br>
-
-            <label>Topic Number: </label>
-            <input type="text" value="{{content.topic_number}}" name="topic_number"><br><br>
-
-            <label>Topic Name</label>
-            <input type="text" value="{{content.topic_name}}"name="topic_name"><br><br>
-
-            <label>Body</label><br>
-            <textarea  name="body" rows="20" cols="70">{{content.content_body}} </textarea><br><br>
-
-            <label>example status</label>
-        <select name="example">
-    
-            <option value="{{content.example}}">{{content.example}}</option>
-            <option value="available">Available</option>
-            <option value="none">None</option>
-        </select><br><br>
-
-            <button type="submit" name="action" value="update_from_name">Update</button>
-
-            {%endif%}
-
-
-        </fieldset>
-    </form>
-</body>
->>>>>>> cdc4812e5ac1c2bb0bebdae127a81d6aadf37d59
 </html>

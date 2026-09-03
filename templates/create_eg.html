@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <html>
 
 <body>
@@ -75,82 +75,5 @@
     </form>
 
 </body>
-=======
-<html>
 
-<body>
-
-    <h1>Create example</h1><br><br>
-
-    <form action="/new_eg" method="POST">
-        <fieldset>
-
-            <legend>Publish example</legend>
-            
-             
-            <label>Topic</label>
-            
-           
-
-            <select name="topic">
-
-                {%if topic_list%}
-            {%for list in topic_list%}
-
-                <option>Topic name</option>
-                <option value="{{list.topic_name}}">{{list.topic_name+" : "+list.topic_number}}</option>
-
-                {%endfor%}
-                {%endif%}
-            </select><br><br>
-
-            <label>Name:</label>
-            <input type="text" name="eg_name"><br><br>
-
-            <label>Country</label>
-            <select name="country">
-                <option>Country</option>
-
-            </select><br><br>
-
-            <label>Applying to</label>
-            <input type="text" name="apply_to"><br><br>
-
-            <label>Skills</label>
-            <input type="text" name="skills" width="20"><br><br>
-
-            <label>Achievements</label><br>
-            <textarea name="achieve"  rows="10" cols="40"></textarea><br><br>
-
-            <label>Avatar</label>
-            <input type="text" name="avatar"><br><br>
-
-            <label>Question</label><br>
-            <textarea name="question" rows="20" cols="70"></textarea><br><br>
-
-            <label>Response</label><br>
-            <textarea name="response" rows="20" cols="70"></textarea><br><br>
-
-            <label>word count</label>
-            <input type="number" name="word_count"><br><br>
-
-            <label>example number</label>
-            <select name="eg_no">
-                <option>Example no</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-
-            </select><br><br>
-
-            <label>Comment</label><br>
-            <textarea name="comment" rows="10" cols="40"></textarea><br><br>
-
-            <button type="submit">Publish</button>
-
-
-        </fieldset>
-    </form>
-
-</body>
->>>>>>> cdc4812e5ac1c2bb0bebdae127a81d6aadf37d59
 </html>

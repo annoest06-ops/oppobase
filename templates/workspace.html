@@ -1,3 +1,51 @@
-<!-- at this page will be the workspace for the scholarship question 
- where a person after select the scholarhship will be directed here for 
- the answering his/her question then save them for later changes and edits-->
+<html>
+
+<body>
+
+    <h1>Workspace:</h1><br><br>
+
+    <form action="/essay_workspace" method="POST">
+        <fieldset>
+
+            <legend>search question</legend>
+
+            <p>{{schol.question}}</p><br><br>
+            
+
+            <input type="text" name="scholar_ref" value="{{schol.question}}" hidden><br><br>
+
+            <label>QN</label>
+            <select name="question_no">
+                <option>qn NO</option>
+                <option value=""></option>
+            </select><br><br>
+        
+            <button type="submit" name="action" value="search_qn">search</button>
+          
+        </fieldset>
+    </form>
+
+
+    <form>
+
+        <fieldset>
+            <legend>update work</legend>
+
+            
+            <label>question</label><br>
+            <p>{{schol.question}}</p><br><br>
+
+            <label>response:</label><br>
+            <textarea placeholder="respond here"></textarea><br><br>
+
+
+            <button type="submit" name="action" value="update_res">update</button>
+        </fieldset>
+
+
+    </form>
+
+
+
+</body>
+</html>

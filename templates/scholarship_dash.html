@@ -1,0 +1,22 @@
+<html>
+<body>
+    <h1>Scholarship Dashboard</h1><br><br>
+
+    <form action="/schol_dash" method="POST">
+        <fieldset>
+            <legend>Scholarships</legend>
+
+            <p>Select a scholarship</p><br><br>
+
+            {% if schol_summary %}
+                {% for sum in schol_summary %}
+                    <input type="radio" name="schol_id" value="{{ sum.id }}" required>
+                    {{ sum.id }} - {{ sum.title }} - {{ sum.deadline }} - {{ sum.location }} <br><br>
+                {% endfor %}
+            {% endif %}
+
+            <button type="submit">Select</button>
+        </fieldset>
+    </form>
+</body>
+</html>

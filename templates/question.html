@@ -9,11 +9,18 @@
 
             <legend>create question</legend>
 
-            <label>scholarship name</label><br>
-            <select name="ship_name">
 
-                <option value="">name type</option>
+            <label>scholarship name</label><br>
+            
+            <select name="ship_name">
+            {%if names%}
+                {%for name in names%}
+                <option value="{{name.title}}">{{name.title}}</option>
+                {%endfor%}
+                {%endif%}
+                
             </select><br><br>
+            
 
             <label>question number</label><br>
             <input type="number" name="qn_number"><br><br>

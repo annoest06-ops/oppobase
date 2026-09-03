@@ -1,0 +1,16 @@
+<html>
+<body>
+    <h1>{{ schol.title }}</h1><br><br>
+
+    <p><strong>Description:</strong> {{ schol.content }}</p>
+    <p><strong>Comment:</strong> {{ schol.comment }}</p>
+
+    <br><br>
+ 
+    <form action="/scholar_detail" method="POST">
+        <input type="text" value="{{scholar_id}}" name="id" hidden>
+        <button type="submit">view</button>
+    </form>
+    
+</body>
+</html>
