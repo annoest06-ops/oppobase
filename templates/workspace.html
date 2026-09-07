@@ -3,22 +3,27 @@
 <body>
 
     <h1>Workspace:</h1><br><br>
+    <B>SEE HERE:{{scholar_id}}</B>
 
-    <form action="/essay_workspace" method="POST">
+    <form action="/essay_work" method="POST">
         <fieldset>
 
             <legend>search question</legend>
 
-            <p>{{schol.question}}</p><br><br>
-            
-
-            <input type="text" name="scholar_ref" value="{{schol.question}}" hidden><br><br>
-
             <label>QN</label>
             <select name="question_no">
+
+            
                 <option>qn NO</option>
-                <option value=""></option>
+                    {%if num%}
+                   {%for nums in num%}
+                <option value="{{nums.number}}">{{nums.number}}</option>
+
+                {%endfor%}
+                {%endif%}
             </select><br><br>
+
+            <input type="text" name="value_id" value="{{scholar_id}}" hidden>
         
             <button type="submit" name="action" value="search_qn">search</button>
           
@@ -33,7 +38,7 @@
 
             
             <label>question</label><br>
-            <p>{{schol.question}}</p><br><br>
+            <p>{{check.question}}</p><br><br>
 
             <label>response:</label><br>
             <textarea placeholder="respond here"></textarea><br><br>

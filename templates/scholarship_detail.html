@@ -6,9 +6,11 @@
     <p><strong>Comment:</strong> {{ schol.comment }}</p>
 
     <br><br>
+
+    <p>see the scholar_id <b>{{scholar_id}}</b></p>
  
     <form action="/scholar_detail" method="POST">
-        <input type="text" value="{{scholar_id}}" name="id" hidden>
+        <input type="text" value="{{scholar_id}}" name="data_id" hidden>
         <button type="submit">view</button>
     </form>
     
