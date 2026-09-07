@@ -652,7 +652,7 @@ def scholar():
 
     
 
-@app.route('/schol_dash', methods=['GET', 'POST'])
+@app.route('/schol_dash', methods=['POST', 'GET'])
 def schol_dash():
 
     schol_summary, error = schol_sum()
@@ -661,6 +661,7 @@ def schol_dash():
 
     if request.method == 'POST':
         schol_id = request.form.get('schol_id')
+        print(schol_id)
 
         if schol_id:
             return redirect(url_for('schol_detail', schol_name=schol_id))
@@ -695,36 +696,35 @@ def schol_sum():
 @app.route('/scholar_detail', methods=['GET','POST'])
 def schol_detail():
 
-    scholar_id=request.args.get('schol_name','no data found')
+    scholar_id=request.args.get('schol_name')
+    
     schol, error = select_scholarship(scholar_id)
-
-   # if scholar_id:
-      #  return redirect(url_for('essay_workspace',crab_id=scholar_id))
 
     if not schol:
         print('Failed to fetch scholarship:', error)
-        #return redirect(url_for('schol_dash'))
-
+ 
     if request.method=='POST':
-        ids=request.form.get('ids')
-        return redirect(url_for('essay_workspace',ids=ids))
+        data_id=request.form.get('data_id')
+
+        if data_id:
+          return redirect(url_for('essay_workspace',data_id=data_id))
 
 
     return render_template('scholarship_detail.html', schol=schol,scholar_id=scholar_id)
 
 def select_scholarship(value):
    sql='''
-   SELECT title,content,comment,id
+   SELECT title,content,comment,scholar_id
    FROM 
    scholarship
-   WHERE id=%s
+   WHERE scholar_id=%s
 '''
 
    conn = None
    try:
                  conn = db_pool.getconn()
                  with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                         cur.execute(sql,(value),)
+                         cur.execute(sql,(value,))
                          row = cur.fetchone()
                  return row, None
    except Exception as e:
@@ -743,28 +743,44 @@ def select_scholarship(value):
 @app.route('/essay_work', methods=['POST','GET'])
 def essay_workspace():
 
-    scholar_id=request.args.get('ids') 
-    schol, error = select_schol(scholar_id)
-           
-    if not schol:
-      print('Failed to load workspace scholarship:', error)
-      # return redirect(url_for('schol_dash'))
+    scholar_id=request.args.get('data_id') 
+    check=[]
 
-    return render_template('workspace.html',schol=schol)
+    print(scholar_id)
+    num,opps=scholar_num(scholar_id)
+
+# num is the function for selecting the question number for the specific scholarship id
+
+    if not num:
+        print('ERROR',opps)
+
+    if request.method=='POST':
+        action=request.form.get('action')
+        if action=='search_qn':
+            question_no=request.form.get('question_no')
+            value_id=request.form.get('value_id')
+            scholar_id
+
+            check,error=select_question(value_id,question_no)
+
+            if not check:
+                  print('ERROR',error)
+
+    return render_template('workspace.html',check=check,num=num,scholar_id=scholar_id)
 
 
-def select_schol(scholar_id):
+def select_question(scholar_id,number):
     sql='''
     SELECT question
     FROM question
-    WHERE scholar_id=%s
+    WHERE scholar_id=%s AND number=%s
 '''
 
     conn = None
     try:
                      conn = db_pool.getconn()
                      with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                             cur.execute(sql,(scholar_id),)
+                             cur.execute(sql,(scholar_id,number))
                              row = cur.fetchone()
                      return row, None
     except Exception as e:
@@ -778,6 +794,31 @@ def select_schol(scholar_id):
                          if conn:
                              db_pool.putconn(conn)
     
+def scholar_num(value):
+    sql='''
+    SELECT number
+    FROM question 
+    WHERE scholar_id=%s
+    '''
+
+    conn = None
+    try:
+                         conn = db_pool.getconn()
+                         with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                                 cur.execute(sql,(value,))
+                                 row = cur.fetchall()
+                         return row, None
+    except Exception as e:
+                             if conn:
+                                 conn.rollback()
+                             if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+                                 conn.close()
+                                 conn = None
+                             return None, str(e)
+    finally:
+                             if conn:
+                                 db_pool.putconn(conn)
+          
 
 if __name__=='__main__':
     app.run(debug=True, use_reloader=True)
