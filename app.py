@@ -8,6 +8,7 @@ from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import RealDictCursor
 import os
 from dotenv import load_dotenv
+from engine import analysis_prompt #this function is for ai calling from another py file
 
 load_dotenv()
 
@@ -26,6 +27,12 @@ db_pool = ThreadedConnectionPool(
 def close_db_pool():
     if db_pool:
         db_pool.closeall()
+
+
+
+instruction_prompt="""
+
+"""  
 
 
 app = Flask(__name__)
@@ -661,7 +668,7 @@ def schol_dash():
 
     if request.method == 'POST':
         schol_id = request.form.get('schol_id')
-        print(schol_id)
+        print('scholarship id:',schol_id)
 
         if schol_id:
             return redirect(url_for('schol_detail', schol_name=schol_id))
@@ -671,7 +678,7 @@ def schol_dash():
 
 def schol_sum():
     sql='''
-     SELECT id ,title,deadline,location
+     SELECT scholar_id ,title,deadline,location
      FROM scholarship
 '''  
     conn = None
@@ -707,7 +714,7 @@ def schol_detail():
         data_id=request.form.get('data_id')
 
         if data_id:
-          return redirect(url_for('essay_workspace',data_id=data_id))
+          return redirect(url_for('quest_dash',data_id=data_id))
 
 
     return render_template('scholarship_detail.html', schol=schol,scholar_id=scholar_id)
@@ -737,51 +744,21 @@ def select_scholarship(value):
    finally:
                      if conn:
                          db_pool.putconn(conn)
-    
 
 
-@app.route('/essay_work', methods=['POST','GET'])
-def essay_workspace():
-
-    scholar_id=request.args.get('data_id') 
-    check=[]
-
-    print(scholar_id)
-    num,opps=scholar_num(scholar_id)
-
-# num is the function for selecting the question number for the specific scholarship id
-
-    if not num:
-        print('ERROR',opps)
-
-    if request.method=='POST':
-        action=request.form.get('action')
-        if action=='search_qn':
-            question_no=request.form.get('question_no')
-            value_id=request.form.get('value_id')
-            scholar_id
-
-            check,error=select_question(value_id,question_no)
-
-            if not check:
-                  print('ERROR',error)
-
-    return render_template('workspace.html',check=check,num=num,scholar_id=scholar_id)
-
-
-def select_question(scholar_id,number):
+def select_question(scholar_id):
     sql='''
-    SELECT question
+    SELECT number,question
     FROM question
-    WHERE scholar_id=%s AND number=%s
+    WHERE scholar_id=%s
 '''
 
     conn = None
     try:
                      conn = db_pool.getconn()
                      with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                             cur.execute(sql,(scholar_id,number))
-                             row = cur.fetchone()
+                             cur.execute(sql,(scholar_id,))
+                             row = cur.fetchall()
                      return row, None
     except Exception as e:
                          if conn:
@@ -794,31 +771,27 @@ def select_question(scholar_id,number):
                          if conn:
                              db_pool.putconn(conn)
     
-def scholar_num(value):
-    sql='''
-    SELECT number
-    FROM question 
-    WHERE scholar_id=%s
-    '''
 
-    conn = None
-    try:
-                         conn = db_pool.getconn()
-                         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                                 cur.execute(sql,(value,))
-                                 row = cur.fetchall()
-                         return row, None
-    except Exception as e:
-                             if conn:
-                                 conn.rollback()
-                             if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
-                                 conn.close()
-                                 conn = None
-                             return None, str(e)
-    finally:
-                             if conn:
-                                 db_pool.putconn(conn)
-          
+@app.route('/question_dash',methods=['POST','GET'])
+def quest_dash():
+
+    scholarship_id=request.args.get('data_id')
+
+    data=select_question(scholarship_id)
+
+    if not data:
+        print('error fetch question')
+    
+    return render_template('question_dash.html',data=data)
+
+
+
+@app.route('/question_view')
+def quest_view():
+
+    return render_template('question_view.html')
+
+
 
 if __name__=='__main__':
     app.run(debug=True, use_reloader=True)

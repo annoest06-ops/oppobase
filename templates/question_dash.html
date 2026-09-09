@@ -1,0 +1,24 @@
+<html>
+
+
+  <body>
+
+    <h1>Question Dashboard</h1><br><br>
+
+    <p>{{scholarship_id}}</p>
+
+    <form action="/question_dash" method="POST">
+
+        {%if data%}
+        {%for value in data%}
+        
+        <input type="radio" name="question_number" value="{{value.number}}">{{value.number}} - {{value.question}} <br><br>
+
+        {%endfor%}
+        {%endif%}
+
+        <button type="submit">view</button>
+
+    </form>
+  </body>
+</html>

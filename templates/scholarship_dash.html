@@ -10,8 +10,8 @@
 
             {% if schol_summary %}
                 {% for sum in schol_summary %}
-                    <input type="radio" name="schol_id" value="{{ sum.id }}" required>
-                    {{ sum.id }} - {{ sum.title }} - {{ sum.deadline }} - {{ sum.location }} <br><br>
+                    <input type="radio" name="schol_id" value="{{ sum.scholar_id }}" required>
+                    {{ sum.scholar_id }} - {{ sum.title }} - {{ sum.deadline }} - {{ sum.location }} <br><br>
                 {% endfor %}
             {% endif %}
 

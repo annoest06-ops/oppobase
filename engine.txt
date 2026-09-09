@@ -1,0 +1,256 @@
+from flask import Flask, render_template, redirect, url_for, session, request, jsonify
+import uuid
+from google import genai
+from google.genai import types
+import os
+from dotenv import load_dotenv
+import requests
+from bs4 import BeautifulSoup
+
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+SECRETE_KEY = os.getenv("SECRETE_KEY")
+
+client = genai.Client(api_key=GEMINI_API_KEY)
+
+app = Flask(__name__)
+app.secret_key = SECRETE_KEY
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False   # False because you're on http, not https, locally
+print("SECRET KEY LOADED:", repr(SECRETE_KEY))
+
+print(SECRETE_KEY)
+# Holds the LIVE Gemini chat objects. Key = interview_id, Value = chat object.
+# (This resets if the server restarts — fine for dev, swap for Redis later if you deploy)
+active_interviews = {}
+
+
+@app.route('/space_form', methods=['GET', 'POST'])
+def create_space():
+    if request.method == 'POST':
+        web_url = request.form.get('web_link', '')
+        fund_type = request.form.get('fundings', '')
+        ac_level = request.form.get('ac_level', '')
+        add_info = request.form.get('add_info', '')
+        more_info = request.form.get('more_info', '')
+
+        web_data = extract_web_text(web_url) if web_url else ""
+
+        print(web_data)
+
+        # The CV/document upload can only realistically happen here,
+        # since this is the only form that has the file input
+        doc_bytes, doc_mimetype = None, None
+        doc_upload = request.files.get('uploads')
+        if doc_upload and doc_upload.filename != '':
+            doc_bytes = doc_upload.read()
+            doc_mimetype = doc_upload.mimetype or 'application/pdf'
+
+        # 1. Start ONE chat session for the whole interview
+        chat = client.chats.create(model="gemini-2.5-flash")
+
+        intro_prompt = f"""
+    You are Alfred, an expert Scholarship Interview Coach and Scholarship Selection
+    Committee member with extensive experience interviewing applicants for
+    prestigious scholarships, fellowships, grants, and university admissions.
+    Your objective is to simulate a realistic scholarship interview tailored to
+    the applicant's profile, then provide a detailed structured evaluation at
+    the end.
+    === CONTEXT PROVIDED ===
+    Institution / Scholarship Website Content:
+    {web_data if web_data else "Not provided."}
+    Applicant CV / Resume:
+    {doc_bytes if doc_bytes else "Not provided."}
+Funding Type: {fund_type}
+Academic Level: {ac_level}
+Notes on Attached Document: {add_info}
+Additional Information: {more_info}
+Interview Difficulty: {8/10}
+Use the website content to understand the institution's mission, selection
+criteria, core values, and leadership expectations. Use the CV to understand
+the applicant's academic history, work experience, leadership, awards,
+research, community service, skills, and extracurriculars. Never ask a
+question that contradicts the resume — ask deeper follow-ups based on what's
+actually there instead. Never invent experiences the applicant hasn't
+provided.
+=== DIFFICULTY GUIDELINES ===
+Easy: friendly, straightforward, mostly personal and motivational questions.
+Medium: behavioral questions, leadership, decision-making, problem-solving,
+follow-up questions.
+Hard: committee-style, challenging scenarios, ethical dilemmas, pressure
+questions, unexpected follow-ups, critical thinking, self-reflection.
+Apply the "{8/10}" level throughout.
+=== INTERVIEW RULES ===
+You will ask EXACTLY 5 interview questions, one at a time. Each question
+should evaluate one or more of: character, motivation, academic potential,
+leadership, community impact, communication skills, resilience, fit with
+the institution, consistency with resume, integrity, decision making,
+problem solving, emotional intelligence, professionalism, self-awareness.
+- Ask ONE question, then STOP and wait for the applicant's spoken answer.
+- Do NOT reveal future questions in advance.
+- Do NOT give hints before the applicant answers.
+- Do NOT evaluate or score any answer as you go — no feedback between
+  questions, not even a brief comment. Just acknowledge briefly ("Thank
+  you.") and move to the next question.
+- While questions 1 through 5 are in progress, respond ONLY in plain
+  natural spoken language — no JSON, no markdown, no headers. This will be
+  read aloud by a text-to-speech engine, so keep it conversational.
+=== START OF INTERVIEW ===
+Begin now with a short professional introduction (mention there will be
+5 questions total), then ask Question 1. Wait for the answer before
+continuing.
+"""
+
+        contents = [intro_prompt]
+        if doc_bytes:
+            contents.append(types.Part.from_bytes(data=doc_bytes, mime_type=doc_mimetype))
+
+        try:
+            response = chat.send_message(message=contents)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+        # 2. Store the live chat object server-side
+        interview_id = str(uuid.uuid4())
+        active_interviews[interview_id] = chat
+
+        # 3. Only small, JSON-safe data goes in the cookie session
+        session['interview_id'] = interview_id
+        session['first_question'] = response.text
+        print("SET SESSION:", dict(session))
+
+        return redirect(url_for('recorder'))
+
+    return render_template('enterview_form.html')
+
+
+@app.route('/stream')
+def recorder():
+    first_question = session.get(
+        'first_question',
+        'Hello, my name is Alfred, I will be your interview coach for today'
+    )
+    return render_template('record.html', data=first_question)
+
+
+@app.route('/rec', methods=['POST'])
+def upload():
+    interview_id = session.get('interview_id')
+    chat = active_interviews.get(interview_id)
+
+    print("SESSION:", dict(session))
+    print("ACTIVE INTERVIEW IDS:", list(active_interviews.keys()))
+    interview_id = session.get('interview_id')
+    chat = active_interviews.get(interview_id)
+
+    if chat is None:
+        return jsonify({"error": "No active interview found. Please restart from the form."}), 400
+
+    if 'audio_data' not in request.files:
+        return jsonify({"error": "no audio data received"}), 400
+
+    audio_upload = request.files['audio_data']
+    audio_data = audio_upload.read()
+
+    final_evaluation_prompt = """
+The interview is now complete — all 5 questions have been answered.
+Stop asking questions. Do not include any conversational text, greetings,
+markdown formatting, or code fences. Respond with ONLY a single valid JSON
+object, parsable by a strict JSON parser, using EXACTLY this structure:
+{
+  "overall_score": 87,
+  "competency_scores": {
+    "character": 80,
+    "motivation": 85,
+    "leadership": 75,
+    "communication": 90,
+    "academic_potential": 82,
+    "integrity": 88,
+    "community_impact": 70,
+    "resilience": 78,
+    "professionalism": 85,
+    "confidence": 80,
+    "fit_with_scholarship": 83,
+    "decision_making": 76,
+    "critical_thinking": 79
+  },
+  "questions": [
+    {
+      "question_number": 1,
+      "question_text": "...",
+      "score": 85,
+      "what_you_did_well": ["...", "..."],
+      "what_could_be_improved": ["...", "..."],
+      "how_to_improve": ["...", "..."],
+      "stronger_answer_example": "..."
+    }
+  ],
+  "resume_consistency_check": {
+    "consistent_points": ["...", "..."],
+    "missing_details": ["...", "..."],
+    "contradictions": ["...", "..."],
+    "weak_examples": ["...", "..."],
+    "missed_opportunities": ["...", "..."]
+  },
+  "selection_prediction": {
+    "category": "Strong Candidate",
+    "reasoning": "..."
+  },
+  "likely_questions_missed": ["...", "...", "...", "...", "..."],
+  "final_coaching_advice": {
+    "top_strengths": ["...", "..."],
+    "top_weaknesses": ["...", "..."],
+    "communication_tips": ["...", "..."],
+    "storytelling_tips": ["...", "..."],
+    "confidence_tips": ["...", "..."],
+    "resume_consistency_tips": ["...", "..."],
+    "scholarship_specific_prep": ["...", "..."],
+    "final_recommendations": ["...", "..."]
+  }
+}
+All scores are integers between 10 and 100. "selection_prediction.category"
+must be exactly one of: "Very Strong Candidate", "Strong Candidate",
+"Competitive Candidate", "Borderline Candidate", "Needs Significant
+Improvement". "questions" must contain exactly 5 entries, one per question
+actually asked, in order. Do not wrap the JSON in backticks. Do not add any
+text before or after the JSON object.
+"""
+
+    contents = [final_evaluation_prompt,
+        types.Part.from_bytes(
+            data=audio_data,
+            mime_type=audio_upload.mimetype or 'audio/webm'
+        )
+    ]
+
+    try:
+        response = chat.send_message(message=contents)
+        return jsonify({"feedback": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def extract_web_text(url):
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        for element in soup(["script", "style"]):
+            element.decompose()
+
+        raw_text = soup.get_text()
+        lines = (line.strip() for line in raw_text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        clean_text = '\n'.join(chunk for chunk in chunks if chunk)
+        return clean_text
+
+    except requests.exceptions.RequestException as e:
+        return ""  # fail quietly — don't feed an error string into the interview prompt
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
