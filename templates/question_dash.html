@@ -5,9 +5,13 @@
 
     <h1>Question Dashboard</h1><br><br>
 
+    <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
+
     <p>{{scholarship_id}}</p>
 
     <form action="/question_dash" method="POST">
+
+      <input type="text" name="scholarship_id" value="{{scholarship_id}}" hidden>
 
         {%if data%}
         {%for value in data%}

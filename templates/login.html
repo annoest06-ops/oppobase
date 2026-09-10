@@ -12,15 +12,19 @@
             <legend>Login</legend>
 
             <label>Username:</label>
-            <input type="text" name="username" placeholder="put username"><br><br>
+            <input type="text" name="username" placeholder="enter username"><br><br>
 
             <label>Password:</label>
-            <input type="password" name="passcode"><br><br>
+            <input type="password" name="passcode" placeholder="enter password"><br><br>
 
             <button type="submit" name="action" value="login">login</button>
+
+            {% if message %}
+                <p style="color: red;">{{ message }}</p>
+            {% endif %}
 
         </fieldset>
     </form>
 </body>
 
-</html>
+</html

@@ -30,4 +30,4 @@ question='tell me the time you notice the challenge in you community and desicid
 personal_deatails='im a computer scince student,i won a science fair competition first position'
 instruction_prompt=f"provide the proper guidance on the best way this student can understand the question:{question} and answer it based on the following information:achievements:{achievements},reference:{reference},personal_deatails:{personal_deatails}"
 
-#print(analysis_prompt(achievements,reference,question,personal_deatails,instruction_prompt))
+# print(analysis_prompt(achievements,reference,question,personal_deatails,instruction_prompt))

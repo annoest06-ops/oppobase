@@ -2,12 +2,25 @@
 
    <body>
 
+      <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
+
     <h1>Question View</h1><br><br>
 
-    <p>{{scholar_id}} {{question_no}} {{scholarship} {{deadline}}}</p><br><br>
 
-    <b>{{question_no}}</b><br><br>
+
+    <b>{{view.number}}: {{view.question}}</b><br><br>
+
+    <form action="/intelligence" method="POST">
+      <input type="text" value="{{view.number}}" name="question_no" hidden>
+      <input type="text" value="{{view.question}}" name="question" hidden>
+
+    <button>understand</button>
+
+    <hr>
+
+    <p>Intelligent Analyisis Feedback</p><br><br>
 
     <p>{{question_prompt}}</p>
+    
    </body>
 </html>

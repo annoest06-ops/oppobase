@@ -5,6 +5,7 @@
 
 <p>create content part</p>
 
+   <button> <a href="{{url_for('admin_dash')}}">back</a></button><br>
 <form method="POST" action="/new_content">
 
     <fieldset>
@@ -25,6 +26,10 @@
             <option value="available">Available</option>
             <option value="none">None</option>
         </select><br><br>
+
+        {% if message %}
+            <p style="color: red;">{{ message }}</p>
+        {% endif %}
 
         <button type="submit">Publish</button>
 

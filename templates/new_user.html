@@ -1,0 +1,49 @@
+<html>
+
+   <body>
+
+    <h1>Fill Information</h1><br><br>
+    <p><b>filling this information will enable our intelligent software
+         to know you better you are welcome to use opportunity base </b></p><br><br>
+
+
+        <button> <a href="{{url_for('sign_in')}}">sign in</a></button><br>
+
+    <form action="/new_user" method="POST">
+
+        <label>Full Name:</label><br>
+        <input type="text" name="full_name"><br><br>
+
+        <label>Date of birth</label><br>
+        <input type="date" name="date_birth"><br><br>
+
+        <label>School</label><br>
+        <input type="text" name="school"><br><br>
+
+        <label>Combination</label><br>
+        <textarea name="combination"></textarea><br><br>
+
+        <label>Career path</label><br>
+        <textarea name="career_path" placeholder="name future career eg Acountant,economist,teacher,banker"></textarea><br><br>
+
+        <label>Course that you are plan to take </label><br>
+        <textarea name="courses" placeholder="write courses for you career path eg economist,banker,IT,Teacher,accountant"></textarea><br><br>
+
+        <label>Username</label><br>
+        <input type="text" name="username" placeholder="for login"><br><br>
+
+        <label>Password</label><br>
+        <input type="text" name="password" placeholder="for login"><br><br>
+
+        
+        {% if message %}
+            <p style="color: red;">{{ message }}</p>
+        {% endif %}
+
+
+        <button type="submit">register</button>
+
+
+    </form>
+   </body>
+</html>

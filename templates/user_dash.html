@@ -1,14 +1,17 @@
-<htnl>
+<html>
 
   <body>
 
     <h1>user dashboard</h1><br><br>
 
+    <p>Welcome :<b>{{username}}</b></p>
+
     <hr>
     <button> <a href="{{url_for('tdash')}}">tutorial dash</a></button><br>
     <button><a href="{{url_for('schol_dash')}}">scholarship dash</a></button><br>
     <button> <a href="{{url_for('my_board')}}">myboard</button><br>
-    <button><a href="{{url_for('')}}">about</a></button><br>
+    <button><a href="{{url_for('logout_route')}}">logout</a></button><br>
+
     
     <hr>
   </body>

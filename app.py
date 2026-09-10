@@ -29,52 +29,54 @@ def close_db_pool():
         db_pool.closeall()
 
 
-
-instruction_prompt="""
-
-"""  
-
-
 app = Flask(__name__)
 app.secret_key=SECRET_KEY
 
 @app.route('/login', methods=['POST', 'GET'])
 def sign_in():
+
+    message = None  # only set this when there's actually something to report
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('passcode')
 
-        # Pass the user input into the query function
-        user, error = user_login(username)
+        user, error = user_login(username, password)
 
         if error:
             print('Database Error:', error)
-            return render_template('login.html', error="A database error occurred.")
+            message = 'Something went wrong. Please try again.'
+            return render_template('login.html', message=message)
 
-        # Check if user exists and password matches
-        # (Use werkzeug.security.check_password_hash in production)
-        if user and user['password'] == password:
+        if user and user['username'] == username and user['password'] == password:
             session['username'] = username
-            print(username)
-            return redirect(url_for('create_content'))
+            if username == 'admin':
+                return redirect(url_for('admin_dash'))
+            
+            elif username == 'student':
+                return redirect(url_for('new'))
+            
+            else:
+                return redirect(url_for('user_dash'))
+
         else:
-            return render_template('login.html', error="Invalid username or password.")
+            message = 'Invalid username or password. Please try again.'
+            return render_template('login.html', message=message)
 
-    return render_template('login.html')
+    return render_template('login.html', message=message)
 
-
-def user_login(username):
+def user_login(username,password):
     # Parameterized query to prevent SQL Injection
     sql = '''
         SELECT username, password
         FROM account
-        WHERE username = %s
+        WHERE username = %s AND password = %s
     '''
     conn = None
     try:
         conn = db_pool.getconn()
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(sql, (username,))
+            cur.execute(sql, (username,password))
             user = cur.fetchone()  # Returns None if no user is found
         return user, None
     except Exception as e:
@@ -85,8 +87,32 @@ def user_login(username):
         if conn:
             db_pool.putconn(conn)
 
+
+@app.route('/userdash', methods=['POST', 'GET'])
+def user_dash():
+    if 'username' not in session:
+        return redirect(url_for('sign_in'))
+
+    username = session['username']
+    
+    
+    return render_template('user_dash.html', username=username)
+
+@app.route('/admindash',methods=['POST','GET'])
+def admin_dash():
+    if 'username' not in session:
+        return redirect(url_for('sign_in'))
+
+    username = session['username']
+    return render_template('admin_dash.html', username=username)
+
+
 @app.route('/new_content',methods=['POST','GET'])
 def create_content():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
     if request.method=='POST':
         topic_number=request.form.get('topic_no')
         topic_name=request.form.get('topic_name')
@@ -98,10 +124,10 @@ def create_content():
         success,error=insert_content(values)
 
         if not success:
-            print('error:',error)
-        else:
-            print('successfull content added')
-
+           print('error:',error)
+           return render_template('create_content.html', message='Error adding content')
+            
+     
     
     return render_template('create_content.html')
 def insert_content(values):
@@ -147,6 +173,10 @@ def topic_select():
 
 @app.route('/new_eg',methods=['POST','GET'])
 def create_eg():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
     if request.method=='POST':
         topic=request.form.get('topic')
         name=request.form.get('eg_name')
@@ -201,6 +231,10 @@ def new_example(values):
 
 @app.route('/edit_content',methods=['POST','GET'])
 def content_edit():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
      
     search=[]
     error=None
@@ -209,7 +243,7 @@ def content_edit():
     search,error=topic_select()
 
     if not search:
-           print('fail to load names',error)
+        print('fail to load names',error)
 
     if request.method=='POST':
 
@@ -288,8 +322,13 @@ def update_content(topic_number,topic_name,content_body,example,content_id):
 
 @app.route('/update_example',methods=['POST','GET'])
 def edit_update():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+
+    
     search=[]
-    success={}
+    success=[]
     error=None
 
     search,error=topic_select()
@@ -369,6 +408,10 @@ def edit_example(name,country,college,skills,achieves,avatar,question,response,c
 
 @app.route('/tuto_dash',methods=['POST','GET'])
 def tdash():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
     
     
     tp_summary,error=tp_sum()
@@ -448,8 +491,14 @@ def tp_sum():#this is summary for topic dashaboard
    
 
 
-@app.route('/topic/<int:topic_id>') 
-def tuto_home(topic_id):
+@app.route('/tutorial_view') 
+def tuto_home():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+
+    topic_id=request.args.get('topic_id')
+    
 
     success, error = select_topic(topic_id)
     
@@ -458,11 +507,16 @@ def tuto_home(topic_id):
         print(error)
 
 
-    return render_template('tutorial_home.html', content_data=success)
+    return render_template('tutorial_view.html', content_data=success)
 
 
 @app.route('/myboard',methods=['POST','GET'])
 def my_board():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+
+    message=None
     if request.method=='POST':
          date=request.form.get('date')
          subject=request.form.get('subject')
@@ -470,9 +524,11 @@ def my_board():
 
          values=[date,subject,content]
          success,error=board(values)
+         message='Fail to add content to board'
 
          if not success:
-              print('ERROR',error)
+            return render_template('myboard.html',message=message)
+            print('ERROR',error)
 
     return render_template('myboard.html')
 
@@ -501,6 +557,10 @@ def board(values):
 
 @app.route('/reference',methods=['POST','GET'])
 def create_ref():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
 
     if request.method=='POST':
         name=request.form.get('ref_quest')
@@ -542,6 +602,10 @@ def new_ref(values):
 
 @app.route('/scholarship',methods=['POST','GET'])
 def scholar():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
 
     if request.method=='POST':
         name=request.form.get('title')
@@ -586,6 +650,10 @@ def create_scholar(values):
 
 @app.route('/question',methods=['POST','GET'])
 def quest():
+
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
 
     title,bad=scholar()
 
@@ -662,6 +730,10 @@ def scholar():
 @app.route('/schol_dash', methods=['POST', 'GET'])
 def schol_dash():
 
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
+
     schol_summary, error = schol_sum()
     if not schol_summary:
         print('Failed to fetch scholarships:', error)
@@ -703,21 +775,27 @@ def schol_sum():
 @app.route('/scholar_detail', methods=['GET','POST'])
 def schol_detail():
 
-    scholar_id=request.args.get('schol_name')
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
     
-    schol, error = select_scholarship(scholar_id)
 
-    if not schol:
-        print('Failed to fetch scholarship:', error)
- 
     if request.method=='POST':
         data_id=request.form.get('data_id')
 
         if data_id:
           return redirect(url_for('quest_dash',data_id=data_id))
 
+    schol_name=request.args.get('schol_name')
+    
+        
+    schol, error = select_scholarship(schol_name)
+    
+    if not schol:
+        print('Failed to fetch scholarship:i think is here', error)
+     
 
-    return render_template('scholarship_detail.html', schol=schol,scholar_id=scholar_id)
+
+    return render_template('scholarship_detail.html', schol=schol,scholar_id=schol_name)
 
 def select_scholarship(value):
    sql='''
@@ -771,29 +849,264 @@ def select_question(scholar_id):
                          if conn:
                              db_pool.putconn(conn)
     
-
-@app.route('/question_dash',methods=['POST','GET'])
+@app.route('/question_dash', methods=['POST', 'GET'])
 def quest_dash():
 
-    scholarship_id=request.args.get('data_id')
-
-    data=select_question(scholarship_id)
+    if 'username' not in session:
+            return redirect(url_for('sign_in'))
+    
+    scholarship_id = request.args.get('data_id')
+  
+    data, error = select_question(scholarship_id)
 
     if not data:
-        print('error fetch question')
-    
-    return render_template('question_dash.html',data=data)
+        print('error fetch question', error)
 
+    if request.method == 'POST':
+        scholar_id= request.form.get('scholarship_id')
+        question_number = request.form.get('question_number')
+
+
+        if question_number and scholar_id:
+            return redirect(url_for('quest_view', question_no=question_number, scholar_id=scholar_id))
+
+    return render_template('question_dash.html', data=data, scholarship_id=scholarship_id)
+
+
+
+def view_data(scholarship_id, question_number):
+    sql = """
+        SELECT number, question
+        FROM question
+        WHERE scholar_id = %s AND number = %s
+    """
+    conn = None
+    try:
+        conn = db_pool.getconn()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(sql, (scholarship_id, question_number))
+            row = cur.fetchone()
+        return row, None
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+            conn.close()
+            conn = None
+        return None, str(e)
+    finally:
+        if conn:
+            db_pool.putconn(conn)
 
 
 @app.route('/question_view')
 def quest_view():
 
+    if 'username' not in session:
+        return redirect(url_for('sign_in'))
+    
+
+    question_no = request.args.get('question_no')
+    scholarship_id = request.args.get('scholar_id')
+
+    fetch_data, error = view_data(scholarship_id, question_no)
+
+    if not fetch_data:
+        print('error fetch question', error)
+
+    return render_template('question_view.html', view=fetch_data)
+
+
+@app.route('/intelligence',methods=['POST','GET'])
+def gemini():
+
+    if request.method == 'POST':
+        number=request.form.get('question_no')
+        question=request.form.get('question')
+
+        user=session.get('username')
+
+        achieves=achievements(user)
+        refs=reference()
+        #question
+        personal_info=personal_details(user)
+
+        instruction_prompt= f"""You are a scholarship application coach for a high school student. 
+Your job is to GUIDE, never to write their essay for them.
+
+STUDENT DATA:
+Personal details: {personal_info}
+Achievements: {achieves}
+
+SCHOLARSHIP QUESTION:
+"{question}"
+
+REFERENCE ESSAYS (past essays flagged as strong by the scholarship department):
+{refs}
+
+IMPORTANT ON REFERENCE ESSAYS:
+- Use these ONLY to detect structural patterns (e.g. "strong answers show a clear turning point" or "strong answers name a specific person affected").
+- NEVER quote, paraphrase, or borrow specific words, phrases, or content from them.
+- NEVER mention the reference essays exist to the student — the guidance should feel personal, not templated.
+
+YOUR TASK:
+1. Briefly decode what this question is really testing (1 sentence, plain language, no jargon).
+2. Silently compare the question against the pattern found in reference essays to sharpen your understanding of what makes a strong answer here.
+3. Suggest 1-2 SPECIFIC achievements from the student's data that fit this question best, and say why in one short line each.
+4. End with ONE focused question or micro-task (2-3 sentences max) that gets the student writing about a specific moment — not the whole story.
+
+RULES:
+- Never write example sentences or draft text for the essay itself.
+- Never use complex scholarship jargon — this student is new to applications.
+- Keep the whole response under 150 words.
+- Use short sections with emojis as headers, not long paragraphs.
+- Tone: energetic, encouraging, like a coach who believes in them — not corporate or robotic.
+
+FORMAT YOUR OUTPUT EXACTLY LIKE THIS:
+
+🎯 **What they're really asking:**
+[1 sentence]
+
+💡 **Your best material:**
+[Achievement name] — [why it fits, 1 line]
+[Optional 2nd achievement] — [why it fits, 1 line]
+
+✍️ **Your move:**
+[One specific, energizing question or micro-task]
+"""
+
+        question_prompt=analysis_prompt(achieves,refs,question,personal_info,instruction_prompt)
+
+        if question_prompt:
+              return render_template('question_view.html',question_prompt)
+    
+    
+
     return render_template('question_view.html')
 
 
+def achievements(user):
+    sql="""
+    SELECT subject,content 
+    FROM myboard
+    WHERE user=%s
+    """
 
-if __name__=='__main__':
+    conn = None
+    try:
+        conn = db_pool.getconn()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(sql, (user,))
+            row = cur.fetchall()
+        return row, None
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+            conn.close()
+            conn = None
+        return None, str(e)
+    finally:
+        if conn:
+            db_pool.putconn(conn)
+
+def reference():
+    sql="""
+    SELECT question,body,comment 
+    FROM reference
+    """
+
+    conn = None
+    try:
+        conn = db_pool.getconn()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(sql)
+            row = cur.fetchall()
+        return row, None
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+            conn.close()
+            conn = None
+        return None, str(e)
+    finally:
+        if conn:
+            db_pool.putconn(conn)
+
+def personal_details(user):
+    sql="""
+    SELECT full_name,date_birth,career_path,school,combination,courses
+    FROM account
+    WHERE username=%s
+    """
+
+    conn = None
+    try:
+        conn = db_pool.getconn()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(sql, (user,))
+            row = cur.fetchone()
+        return row, None
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+            conn.close()
+            conn = None
+        return None, str(e)
+    finally:
+        if conn:
+            db_pool.putconn(conn)
+
+@app.route('/new_user',methods=['POST','GET'])
+def new():
+    if request.method=='POST':
+        fullname=request.form.get('full_name')
+        datebirth=request.form.get('date_birth')
+        school_name=request.form.get('school')
+        comb=request.form.get('combination')
+        career=request.form.get('career_path')
+        courses=request.form.get('courses')
+        username=request.form.get('username')
+        password=request.form.get('password')
+
+        success,error=create_new(fullname,datebirth,school_name,comb,career,courses,username,password)
+
+        if not success:
+            print('error',error)
+            message='fail to save information'
+            return render_template('new_user.html',message=message)
+
+    return render_template('new_user.html')
+
+
+def create_new(full_name,date_birth,school,combination,career_path,courses,username,password):
+    sql="""
+   INSERT INTO account(full_name,date_birth,school,combination,career_path,courses,username,password)
+   VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+"""
+
+
+    conn = None
+    try:
+            conn = db_pool.getconn()
+            with conn.cursor() as cur:
+                cur.execute(sql, (full_name,date_birth,school,combination,career_path,courses,username,password))
+            conn.commit()
+            return True, None
+    except Exception as e:
+            if conn:
+                conn.rollback()
+            return False, str(e)
+    finally:
+            if conn:
+                db_pool.putconn(conn)
+    
+@app.route('/logout')
+def logout_route():
+    session.clear()
+    return redirect(url_for('sign_in'))
+
+if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
-
-
