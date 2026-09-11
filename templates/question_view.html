@@ -10,17 +10,25 @@
 
     <b>{{view.number}}: {{view.question}}</b><br><br>
 
-    <form action="/intelligence" method="POST">
+    <form action="/question_view" method="POST">
       <input type="text" value="{{view.number}}" name="question_no" hidden>
       <input type="text" value="{{view.question}}" name="question" hidden>
+      <input type="text" value="{{view.scholar_id}}" name="scholarship_id" hidden>
 
-    <button>understand</button>
+    <button type="submit" name="action" value="understand">understand</button>
 
     <hr>
 
     <p>Intelligent Analyisis Feedback</p><br><br>
 
+    <b>question number: {{question_no}}</b><br>
+    <b>question: {{question}}</b><br><br>
+
+     <div class="essay-answer" style="white-space: pre-wrap; word-wrap: break-word;">
+
     <p>{{question_prompt}}</p>
+
+    </div>
     
    </body>
 </html>

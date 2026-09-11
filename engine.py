@@ -1,4 +1,5 @@
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 import os 
 
@@ -16,18 +17,22 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 def analysis_prompt(achievments,reference,question,personal_detail,instruction_prompt):
     # instruction_prompt gives all the information of how ai will execute this
     #of which it can even stay outside the function
-    
+  try:
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=instruction_prompt,
-        config=""# this ensure limits the token,temperature,and easiest
+        config=types.GenerateContentConfig(
+            temperature=0.7,
+            top_p=0.9,
+            top_k=40,
+            max_output_tokens=600,
+            candidate_count=1,
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+        )
     )
 
     return response.text 
-achievements='i created software at school for grading'
-reference="after saw the greatest challenging in grading at my school i use my passion in technology as the weapon to make the solution there where i made system software for gradding and i called it amanah grading"
-question='tell me the time you notice the challenge in you community and desicide to make an action?'
-personal_deatails='im a computer scince student,i won a science fair competition first position'
-instruction_prompt=f"provide the proper guidance on the best way this student can understand the question:{question} and answer it based on the following information:achievements:{achievements},reference:{reference},personal_deatails:{personal_deatails}"
+  except Exception as e:
+    return f"An error occurred: {str(e)}"
 
 # print(analysis_prompt(achievements,reference,question,personal_deatails,instruction_prompt))

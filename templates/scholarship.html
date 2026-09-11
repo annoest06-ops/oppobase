@@ -27,6 +27,10 @@
             <label>comment</label><br>
             <textarea name="comment"></textarea><br><br>
 
+            {% if message %}
+                <p style="color: red;">{{ message }}</p>
+            {% endif %}
+
             <button type="submit">post</button>
 
             

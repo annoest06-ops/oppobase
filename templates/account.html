@@ -1,3 +1,34 @@
-<!-- this is the page where admin create account for user and edit their credentials
- so for here is where all the user account information can be viewed and later
- to be edited -->
+<html>
+
+   <body>
+
+     <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
+    
+
+    <form action="/manage_account" method="POST">
+
+        
+       
+        <label>Combination</label><br>
+        <textarea name="combination" value="{{ view.combination }}">{{ view.combination }}</textarea><br><br>
+
+        <label>Career path</label><br>
+        <textarea name="career_path" value="{{ view.career_path }}" placeholder="career eg Acountant,engineer,banker">{{ view.career_path }}</textarea><br><br>
+
+        <label>Course that you are plan to take </label><br>
+        <textarea name="courses" value="{{ view.courses }}" placeholder="courses for you career path eg banker,IT,Teacher,accountant">{{ view.courses }}</textarea><br><br>
+
+        <label>Password</label><br>
+        <input type="text" name="password" value="{{ view.password }}" placeholder="for login"><br><br>
+
+        {% if message %}
+            <p style="color: red;">{{ message }}</p>
+        {% endif %}
+
+
+        <button type="submit">register</button>
+
+
+    </form>
+   </body>
+</html>

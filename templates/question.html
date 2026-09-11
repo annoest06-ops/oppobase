@@ -17,13 +17,11 @@
             <select name="ship_name">
             {%if names%}
                 {%for name in names%}
-                <option value="{{name.title}}">{{name.title}}</option>
-                {%endfor%}
-                {%endif%}
-                
+                <option value="{{name.scholar_id}}">{{name.scholar_id}} - {{name.title}}</option>
+                 {%endfor%}
+            {%endif%}
             </select><br><br>
-            
-
+           
             <label>question number</label><br>
             <input type="number" name="qn_number"><br><br>
 
@@ -32,6 +30,10 @@
 
             <label>word count</label><br>
             <input type="number" name="word_count"><br><br>
+
+            {% if message %}
+                <p style="color: red;">{{ message }}</p>
+            {% endif %}
 
             <button type="submit">post</button>
 

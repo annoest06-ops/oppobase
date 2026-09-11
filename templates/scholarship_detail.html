@@ -3,14 +3,15 @@
 
     <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
     
+     <div class="essay-answer" style="white-space: pre-wrap; word-wrap: break-word;">
     <h1>{{ schol.title }}</h1><br><br>
 
     <p><strong>Description:</strong> {{ schol.content }}</p>
     <p><strong>Comment:</strong> {{ schol.comment }}</p>
 
-    <br><br>
+    </div>
 
-    <p>see the scholar_id <b>{{scholar_id}}</b></p>
+    <br><br>
  
     <form action="/scholar_detail" method="POST">
         <input type="text" value="{{scholar_id}}" name="data_id" hidden>

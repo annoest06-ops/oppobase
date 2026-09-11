@@ -5,10 +5,13 @@
     <button> <a href="{{url_for('user_dash')}}">back</a></button><br><br>
 
     <h1>Tutorial View</h1><br><br>
+    <div class="essay-answer" style="white-space: pre-wrap; word-wrap: break-word;">
     <p>topic unit : {{ content_data.id }}</p><br><br>
     <p>topic number : {{ content_data.topic_number }}</p><br><br>
     <p>topic title : {{ content_data.topic_name }}</p><br><br>
     <p>content : {{ content_data.content_body }}</p>
+
+    </div>
 
 </body>
 </html>

@@ -516,27 +516,31 @@ def my_board():
     if 'username' not in session:
             return redirect(url_for('sign_in'))
 
-    message=None
+    user=session.get('username')
     if request.method=='POST':
          date=request.form.get('date')
          subject=request.form.get('subject')
          content=request.form.get('content')
+         username=request.form.get('user_id')
 
-         values=[date,subject,content]
+         values=[date,subject,content,user]
          success,error=board(values)
          message='Fail to add content to board'
 
          if not success:
-            return render_template('myboard.html',message=message)
             print('ERROR',error)
+            return render_template('myboard.html',message=message)
 
-    return render_template('myboard.html')
+         user=session.get('username')   
+        
+
+    return render_template('myboard.html',user_id=user)
 
 
 def board(values):
     sql='''
-  INSERT INTO myboard(date,subject,content)   
-  VALUES(%s,%s,%s)
+  INSERT INTO myboard(date,subject,content,username)   
+  VALUES(%s,%s,%s,%s)
 '''
     conn = None
     try:
@@ -619,7 +623,8 @@ def scholar():
         success,error=create_scholar(values)
 
         if not success:
-             print('ERROR',error)
+            print('ERROR',error)
+            return render_template('scholarship.html',message='Fail to add scholarship')
 
     return render_template('scholarship.html')
 
@@ -672,6 +677,8 @@ def quest():
 
         if not success:
             print('ERROR',error)
+            message='Fail to add question'
+            return render_template('question.html',message=message)
 
     return render_template('question.html' , names=title)
 
@@ -702,10 +709,10 @@ def new_quest(values):
 def scholar():
     #this is the function for scholarship name used in selection list
 
-    sql='''
-   SELECT  title 
+    sql="""
+   SELECT  title,scholar_id
    FROM scholarship
-''' 
+   """
 
     conn = None
     try:
@@ -874,9 +881,9 @@ def quest_dash():
 
 
 
-def view_data(scholarship_id, question_number):
+def view_data(scholarship_id,question_number):
     sql = """
-        SELECT number, question
+        SELECT number,question,scholar_id
         FROM question
         WHERE scholar_id = %s AND number = %s
     """
@@ -899,7 +906,7 @@ def view_data(scholarship_id, question_number):
             db_pool.putconn(conn)
 
 
-@app.route('/question_view')
+@app.route('/question_view',methods=['POST','GET'])
 def quest_view():
 
     if 'username' not in session:
@@ -908,34 +915,38 @@ def quest_view():
 
     question_no = request.args.get('question_no')
     scholarship_id = request.args.get('scholar_id')
-
+    
     fetch_data, error = view_data(scholarship_id, question_no)
 
     if not fetch_data:
         print('error fetch question', error)
 
-    return render_template('question_view.html', view=fetch_data)
+    user=session.get('username')
 
-
-@app.route('/intelligence',methods=['POST','GET'])
-def gemini():
-
+   
     if request.method == 'POST':
-        number=request.form.get('question_no')
-        question=request.form.get('question')
+        action = request.form.get('action')
+        if action == 'understand':
+        
+            number=request.form.get('question_no')
+            question=request.form.get('question')
+            scholar_id=request.form.get('scholarship_id')
 
-        user=session.get('username')
+            achieves,opps=achievements(user)
+            refs,error=reference()
+            #question
+            personal_info,fails=personal_details(user)
 
-        achieves=achievements(user)
-        refs=reference()
-        #question
-        personal_info=personal_details(user)
+            instruction_prompt=f"""
+You are a scholarship application coach for a high school student. Your job is to GUIDE, never to write their essay for them.
 
-        instruction_prompt= f"""You are a scholarship application coach for a high school student. 
-Your job is to GUIDE, never to write their essay for them.
+CONTEXT ON YOUR STUDENTS:
+You are coaching Tanzanian students, many from hard economic backgrounds, who are working hard to excel academically and bring meaningful impact to their communities. For many of them, a scholarship isn't just an opportunity — it's a path to helping their family move out of poverty. Many have already shown this drive through community projects, initiatives, and hands-on involvement in their local area. Keep this context in mind to coach with genuine respect and encouragement — but never assume or insert these details into a specific student's answer unless their own data actually supports it. Let their real story lead, not a generic narrative.
 
 STUDENT DATA:
-Personal details: {personal_info}
+
+Personal details: full name, date of birth, career path, school, subject combination, courses — {personal_info}
+
 Achievements: {achieves}
 
 SCHOLARSHIP QUESTION:
@@ -945,51 +956,58 @@ REFERENCE ESSAYS (past essays flagged as strong by the scholarship department):
 {refs}
 
 IMPORTANT ON REFERENCE ESSAYS:
-- Use these ONLY to detect structural patterns (e.g. "strong answers show a clear turning point" or "strong answers name a specific person affected").
-- NEVER quote, paraphrase, or borrow specific words, phrases, or content from them.
-- NEVER mention the reference essays exist to the student — the guidance should feel personal, not templated.
+
+Use these ONLY to detect structural patterns (e.g. "strong answers show a clear turning point" or "strong answers name a specific person affected").
+NEVER quote, paraphrase, or borrow specific words, phrases, or content from them.
+NEVER mention the reference essays exist to the student — the guidance should feel personal, not templated.
+
+PERSONALIZATION:
+Open by addressing the student by their first name (pulled from their personal details) so they immediately feel seen and supported — not a generic greeting, something that feels like a coach who actually knows them.
 
 YOUR TASK:
-1. Briefly decode what this question is really testing (1 sentence, plain language, no jargon).
-2. Silently compare the question against the pattern found in reference essays to sharpen your understanding of what makes a strong answer here.
-3. Suggest 1-2 SPECIFIC achievements from the student's data that fit this question best, and say why in one short line each.
-4. End with ONE focused question or micro-task (2-3 sentences max) that gets the student writing about a specific moment — not the whole story.
+
+Decode what this question is really testing, in 2-3 plain-language sentences (no jargon) — enough to help them understand not just *what* it's asking but *why* the scholarship committee cares about this answer.
+Silently compare the question against the pattern found in reference essays to sharpen your understanding of what makes a strong answer here.
+Suggest 1-2 SPECIFIC achievements from the student's data that fit this question best, and say why in one or two lines each. Only bring in themes of hardship, family impact, or community involvement if the student's own achievements or personal details genuinely reflect that — don't force it.
+End with ONE focused question or micro-task (2-3 sentences max) that gets the student writing about a specific moment — not the whole story.
 
 RULES:
-- Never write example sentences or draft text for the essay itself.
-- Never use complex scholarship jargon — this student is new to applications.
-- Keep the whole response under 150 words.
-- Use short sections with emojis as headers, not long paragraphs.
-- Tone: energetic, encouraging, like a coach who believes in them — not corporate or robotic.
 
-FORMAT YOUR OUTPUT EXACTLY LIKE THIS:
+Never write example sentences or draft text for the essay itself.
+Never use complex scholarship jargon — this student is new to applications.
+Keep the whole response between 220 and 320 words — enough room to feel personal and complete, without dragging.
+Use short sections with emojis as headers. Leave a blank line between every section and between separate points within a section — never write dense, back-to-back paragraphs.
+Tone: energetic, encouraging, like a coach who believes in them — not corporate or robotic.
 
-🎯 **What they're really asking:**
-[1 sentence]
+FORMAT YOUR OUTPUT EXACTLY LIKE THIS (keep the blank lines between sections exactly as shown):
 
-💡 **Your best material:**
-[Achievement name] — [why it fits, 1 line]
-[Optional 2nd achievement] — [why it fits, 1 line]
+Hey [First Name] 👋
 
-✍️ **Your move:**
+🎯 What they're really asking:
+[2-3 sentences]
+
+💡 Your best material:
+[Achievement name] — [why it fits, 1-2 lines]
+
+[Optional 2nd achievement] — [why it fits, 1-2 lines]
+
+✍️ Your move:
 [One specific, energizing question or micro-task]
 """
-
         question_prompt=analysis_prompt(achieves,refs,question,personal_info,instruction_prompt)
-
+            
         if question_prompt:
-              return render_template('question_view.html',question_prompt)
-    
-    
+            return render_template('question_view.html',question_prompt=question_prompt, question_no=number,question=question,view=fetch_data)
 
-    return render_template('question_view.html')
+           
+    return render_template('question_view.html', view=fetch_data)
 
 
 def achievements(user):
     sql="""
     SELECT subject,content 
     FROM myboard
-    WHERE user=%s
+    WHERE username=%s
     """
 
     conn = None
@@ -1102,7 +1120,77 @@ def create_new(full_name,date_birth,school,combination,career_path,courses,usern
     finally:
             if conn:
                 db_pool.putconn(conn)
-    
+
+@app.route('/manage_account',methods=['POST','GET'])
+def manage():
+    username=session.get('username')
+
+    view,error=pull_account(username)
+
+    if not view:
+        print('fail to fetch account info',error)
+
+    if request.method=='POST':
+        comb=request.form.get('combination')
+        career_path=request.form.get('career_path')
+        courses=request.form.get('courses')
+        password=request.form.get('password')
+
+        refresh,opps=update_account(comb,career_path,courses,password,username)
+        message="fail to update information"
+        if not refresh:
+            print('fail to update account',opps)
+            return render_template('account.html',view=view,message=message)
+
+    return render_template('account.html',view=view)
+
+def pull_account(user):
+    sql="""
+    SELECT combination,career_path,courses,password
+    FROM account
+    WHERE username=%s
+    """
+
+    conn = None
+    try:
+            conn = db_pool.getconn()
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(sql, (user,))
+                row = cur.fetchone()
+            return row, None
+    except Exception as e:
+            if conn:
+                conn.rollback()
+            if conn and isinstance(e, (psycopg2.OperationalError, psycopg2.InterfaceError)):
+                conn.close()
+                conn = None
+            return None, str(e)
+    finally:
+            if conn:
+                db_pool.putconn(conn)
+
+def update_account(combination,career_path,courses,password,username):
+    sql="""
+    UPDATE account
+    SET combination=%s,career_path=%s,courses=%s,password=%s
+    WHERE username=%s
+    """
+
+    conn = None
+    try:
+            conn = db_pool.getconn()
+            with conn.cursor() as cur:
+                cur.execute(sql, (combination,career_path,courses,password,username))
+            conn.commit()
+            return True, None
+    except Exception as e:
+            if conn:
+                conn.rollback()
+            return False, str(e)
+    finally:
+            if conn:
+                db_pool.putconn(conn)
+
 @app.route('/logout')
 def logout_route():
     session.clear()
