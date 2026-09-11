@@ -1,21 +1,280 @@
-ready
-<html>
 
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <h1>user dashboard</h1><br><br>
+    <title>User Dashboard - Opportunity Base</title>
 
-    <p>Welcome :<b>{{username}}</b></p>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <hr>
-    <button> <a href="{{url_for('tdash')}}">tutorial dash</a></button><br>
-    <button><a href="{{url_for('schol_dash')}}">scholarship dash</a></button><br>
-    <button> <a href="{{url_for('my_board')}}">myboard</button><br>
-    <button> <a href="{{url_for('manage')}}">manage account</a></button><br>
-    <button><a href="{{url_for('logout_route')}}">logout</a></button><br>
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
 
-    
-    <hr>
-  </body>
-</htnl>
+        h1, h2, h3, h4, h5,
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+
+        .navbar-brand-accent {
+            color: #F5A623;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 45px auto;
+        }
+
+        .welcome-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            margin-bottom: 2rem;
+        }
+
+        .page-heading {
+            color: #2B4C7E;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .welcome-text {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .username {
+            color: #2B4C7E;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            color: #2B4C7E;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .dashboard-action {
+            background-color: #ffffff;
+            border: 1px solid #E1E5EA;
+            border-radius: 12px;
+            padding: 1.4rem;
+            text-decoration: none;
+            color: #22262B;
+            display: block;
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+
+        .dashboard-action:hover {
+            border-color: #2B4C7E;
+            box-shadow: 0 5px 18px rgba(43, 76, 126, 0.10);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            width: 46px;
+            height: 46px;
+            background-color: #F7F8FA;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2B4C7E;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .action-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #2B4C7E;
+            margin-bottom: 0.4rem;
+        }
+
+        .action-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .logout-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E1E5EA;
+        }
+
+        .logout-button {
+            color: #B02A37;
+            border: 1px solid #B02A37;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 0.65rem 1.4rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-button:hover {
+            background-color: #B02A37;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-container {
+                margin: 25px auto;
+            }
+
+            .welcome-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Opportunity Base Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span class="navbar-brand-accent">Opportunity</span> Base
+            </a>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+
+        <!-- Welcome Section -->
+        <div class="welcome-card">
+
+            <h1 class="page-heading">
+                User Dashboard
+            </h1>
+
+            <p class="welcome-text">
+                Welcome,
+                <b class="username">{{username}}</b>
+            </p>
+
+        </div>
+
+        <!-- Dashboard Actions -->
+        <div class="section-title">
+            Your Opportunities
+        </div>
+
+        <div class="dashboard-grid">
+
+            <!-- Tutorials -->
+            <a href="{{url_for('tdash')}}" class="dashboard-action">
+
+                <div class="action-icon">
+                    T
+                </div>
+
+                <div class="action-title">
+                    Tutorials
+                </div>
+
+                <p class="action-description">
+                    Learn useful skills and guidance for your scholarship journey.
+                </p>
+
+            </a>
+
+            <!-- Scholarships -->
+            <a href="{{url_for('schol_dash')}}" class="dashboard-action">
+
+                <div class="action-icon">
+                    S
+                </div>
+
+                <div class="action-title">
+                    Scholarships
+                </div>
+
+                <p class="action-description">
+                    Explore available scholarships and find opportunities that
+                    match your goals.
+                </p>
+
+            </a>
+
+            <!-- My Board -->
+            <a href="{{url_for('my_board')}}" class="dashboard-action">
+
+                <div class="action-icon">
+                    B
+                </div>
+
+                <div class="action-title">
+                    My Board
+                </div>
+
+                <p class="action-description">
+                    Keep track of your scholarship application progress and work.
+                </p>
+
+            </a>
+
+            <!-- Manage Account -->
+            <a href="{{url_for('manage')}}" class="dashboard-action">
+
+                <div class="action-icon">
+                    A
+                </div>
+
+                <div class="action-title">
+                    Manage Account
+                </div>
+
+                <p class="action-description">
+                    View and manage your account information.
+                </p>
+
+            </a>
+
+        </div>
+
+        <!-- Logout -->
+        <div class="logout-section">
+
+            <a
+                href="{{url_for('logout_route')}}"
+                class="logout-button"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
 

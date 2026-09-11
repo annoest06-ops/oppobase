@@ -1,35 +1,107 @@
-ready
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Account - Opportunity Base</title>
 
-   <body>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-     <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
-    
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
+        h1, h2, h3, h4, h5, .navbar-brand, legend {
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+        .btn-primary {
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+        }
+        .btn-primary:hover {
+            background-color: #1F3A61;
+            border-color: #1F3A61;
+        }
+        .btn-outline-back {
+            border-color: #2B4C7E;
+            color: #2B4C7E;
+        }
+        .btn-outline-back:hover {
+            background-color: #2B4C7E;
+            color: #fff;
+        }
+        .account-card {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        textarea {
+            resize: vertical;
+        }
+    </style>
+</head>
 
-    <form action="/manage_account" method="POST">
+<body>
 
-        
-       
-        <label>Combination</label><br>
-        <textarea name="combination" value="{{ view.combination }}">{{ view.combination }}</textarea><br><br>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('user_dash') }}">
+                <span style="color:#F5A623;">Opportunity</span> Base
+            </a>
+        </div>
+    </nav>
 
-        <label>Career path</label><br>
-        <textarea name="career_path" value="{{ view.career_path }}" placeholder="career eg Acountant,engineer,banker">{{ view.career_path }}</textarea><br><br>
+    <div class="container">
 
-        <label>Course that you are plan to take </label><br>
-        <textarea name="courses" value="{{ view.courses }}" placeholder="courses for you career path eg banker,IT,Teacher,accountant">{{ view.courses }}</textarea><br><br>
+        <div class="mt-3">
+            <a href="{{ url_for('user_dash') }}" class="btn btn-outline-back">&larr; Back</a>
+        </div>
 
-        <label>Password</label><br>
-        <input type="text" name="password" value="{{ view.password }}" placeholder="for login"><br><br>
+        <div class="account-card">
+            <h3 class="mb-4">Manage Account</h3>
 
-        {% if message %}
-            <p style="color: red;">{{ message }}</p>
-        {% endif %}
+            <form action="/manage_account" method="POST">
 
+                <div class="mb-3">
+                    <label class="form-label">Combination</label>
+                    <textarea name="combination" class="form-control" rows="2">{{ view.combination }}</textarea>
+                </div>
 
-        <button type="submit">register</button>
+                <div class="mb-3">
+                    <label class="form-label">Career path</label>
+                    <textarea name="career_path" class="form-control" rows="2" placeholder="career eg Acountant,engineer,banker">{{ view.career_path }}</textarea>
+                </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Course that you are plan to take</label>
+                    <textarea name="courses" class="form-control" rows="2" placeholder="courses for you career path eg banker,IT,Teacher,accountant">{{ view.courses }}</textarea>
+                </div>
 
-    </form>
-   </body>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="text" name="password" class="form-control" value="{{ view.password }}" placeholder="for login">
+                </div>
+
+                {% if message %}
+                    <p class="text-danger">{{ message }}</p>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
 </html>

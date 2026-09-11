@@ -1,31 +1,238 @@
-ready
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>New Essay Reference - Opportunity Base</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
+
+        h1, h2, h3, h4, h5,
+        .navbar-brand,
+        legend {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+
+        .navbar-brand-accent {
+            color: #F5A623;
+        }
+
+        .main-container {
+            max-width: 850px;
+            margin: 45px auto;
+        }
+
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .page-heading {
+            color: #2B4C7E;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        legend {
+            color: #2B4C7E;
+            font-size: 1.25rem;
+            font-weight: 600;
+            float: none;
+            width: auto;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #33383f;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 1px solid #D7DCE2;
+            border-radius: 8px;
+            padding: 0.75rem 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: #2B4C7E;
+            box-shadow: 0 0 0 0.2rem rgba(43, 76, 126, 0.15);
+        }
+
+        .essay-textarea {
+            min-height: 170px;
+            resize: vertical;
+        }
+
+        .comment-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+            border-radius: 8px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #1F3A61;
+            border-color: #1F3A61;
+        }
+
+        .back-button {
+            color: #2B4C7E;
+            border: 1px solid #2B4C7E;
+            background-color: #ffffff;
+            border-radius: 8px;
+        }
+
+        .back-button:hover {
+            color: #ffffff;
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+        }
+
+        .section-intro {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .reference-section {
+            background-color: #F7F8FA;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 576px) {
+            .main-container {
+                margin: 25px auto;
+            }
+
+            .form-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
 
 <body>
 
-    <h1>New essay reference</h1><br><br>
+    <!-- Opportunity Base Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span class="navbar-brand-accent">Opportunity</span> Base
+            </a>
+        </div>
+    </nav>
 
-    <button> <a href="{{url_for('admin_dash')}}">back</a></button><br>
+    <div class="container main-container">
 
-    <form action="/reference" method="POST">
+        <!-- Back Button -->
+        <div class="mb-3">
+            <button type="button" class="btn back-button">
+                <a href="{{url_for('admin_dash')}}" class="text-decoration-none" style="color: inherit;">
+                    ← Back to Admin Dashboard
+                </a>
+            </button>
+        </div>
 
-        <fieldset>
-            <legend>create new</legend>
+        <!-- Page Heading -->
+        <h1 class="page-heading">New Essay Reference</h1>
 
-            <label>question</label><br>
-            <textarea name="ref_quest"></textarea><br><br>
+        <div class="form-card">
 
-            <label>response</label><br>
-            <textarea name="ref_response"></textarea><br><br>
+            <p class="section-intro">
+                Add a reference essay that can be used to support students
+                when they work on scholarship applications.
+            </p>
 
-            <label>comment</label><br>
-            <textarea name="ref_comment"></textarea><br><br>
+            <form action="/reference" method="POST">
 
-            <button type="submit">post</button>
+                <fieldset>
 
+                    <legend>Create New Reference</legend>
 
-        </fieldset>
-    </form>
+                    <!-- Question -->
+                    <div class="reference-section">
+                        <label class="form-label">
+                            Question
+                        </label>
+
+                        <textarea
+                            name="ref_quest"
+                            class="form-control essay-textarea"
+                            placeholder="Enter the essay question..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Response -->
+                    <div class="reference-section">
+                        <label class="form-label">
+                            Response
+                        </label>
+
+                        <textarea
+                            name="ref_response"
+                            class="form-control essay-textarea"
+                            placeholder="Enter the example response..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Comment -->
+                    <div class="reference-section">
+                        <label class="form-label">
+                            Comment
+                        </label>
+
+                        <textarea
+                            name="ref_comment"
+                            class="form-control comment-textarea"
+                            placeholder="Add comments, explanations, or guidance..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-flex justify-content-end mt-4">
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Post Reference
+                        </button>
+                    </div>
+
+                </fieldset>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </body>
 </html>
+

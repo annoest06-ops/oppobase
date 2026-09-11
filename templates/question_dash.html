@@ -1,29 +1,120 @@
-ready
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Dashboard - Opportunity Base</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <body>
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
+        h1, h2, h3, h4, h5, .navbar-brand, legend {
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+        .btn-primary {
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+        }
+        .btn-primary:hover {
+            background-color: #1F3A61;
+            border-color: #1F3A61;
+        }
+        .btn-outline-back {
+            border-color: #2B4C7E;
+            color: #2B4C7E;
+        }
+        .btn-outline-back:hover {
+            background-color: #2B4C7E;
+            color: #fff;
+        }
+        .content-card {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .question-option {
+            border: 1px solid #E3E6EA;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .question-option:hover {
+            border-color: #2B4C7E;
+            background-color: #F7F8FA;
+        }
+        .question-option input[type="radio"] {
+            margin-right: 0.6rem;
+            accent-color: #2B4C7E;
+        }
+        .question-option label {
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        .scholarship-tag {
+            background-color: #F5A623;
+            color: #22262B;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+        }
+    </style>
+</head>
 
-    <h1>Question Dashboard</h1><br><br>
+<body>
 
-    <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('user_dash') }}">
+                <span style="color:#F5A623;">Opportunity</span> Base
+            </a>
+        </div>
+    </nav>
 
-    <p>{{scholarship_id}}</p>
+    <div class="container">
 
-    <form action="/question_dash" method="POST">
+        <div class="mt-3">
+            <a href="{{ url_for('user_dash') }}" class="btn btn-outline-back">&larr; Back</a>
+        </div>
 
-      <input type="text" name="scholarship_id" value="{{scholarship_id}}" hidden>
+        <div class="content-card">
+            <h3 class="mb-2">Question Dashboard</h3>
+            <p class="mb-4"><span class="scholarship-tag">Scholarship #{{ scholarship_id }}</span></p>
 
-        {%if data%}
-        {%for value in data%}
-        
-        <input type="radio" name="question_number" value="{{value.number}}">{{value.number}} - {{value.question}} <br><br>
+            <form action="/question_dash" method="POST">
 
-        {%endfor%}
-        {%endif%}
+                <input type="text" name="scholarship_id" value="{{ scholarship_id }}" hidden>
 
-        <button type="submit">view</button>
+                {% if data %}
+                {% for value in data %}
+                <div class="question-option">
+                    <input type="radio" name="question_number" value="{{ value.number }}" id="q{{ value.number }}">
+                    <label for="q{{ value.number }}">{{ value.number }} - {{ value.question }}</label>
+                </div>
+                {% endfor %}
+                {% endif %}
 
-    </form>
-  </body>
+                <button type="submit" class="btn btn-primary w-100 mt-3">View</button>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
 </html>

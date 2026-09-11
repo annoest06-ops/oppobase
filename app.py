@@ -969,7 +969,7 @@ YOUR TASK:
 Decode what this question is really testing, in 2-3 plain-language sentences (no jargon) — enough to help them understand not just *what* it's asking but *why* the scholarship committee cares about this answer.
 Silently compare the question against the pattern found in reference essays to sharpen your understanding of what makes a strong answer here.
 Suggest 1-2 SPECIFIC achievements from the student's data that fit this question best, and say why in one or two lines each. Only bring in themes of hardship, family impact, or community involvement if the student's own achievements or personal details genuinely reflect that — don't force it.
-End with ONE focused question or micro-task (2-3 sentences max) that gets the student writing about a specific moment — not the whole story.
+End with ONE concrete next step: a specific question about a single moment, or a small task like "write 3 sentences about X." It must reference something from their own achievements/data — never generic. The student should know exactly what to do next after reading it, in one glance.
 
 RULES:
 
@@ -977,7 +977,7 @@ Never write example sentences or draft text for the essay itself.
 Never use complex scholarship jargon — this student is new to applications.
 Keep the whole response between 220 and 320 words — enough room to feel personal and complete, without dragging.
 Use short sections with emojis as headers. Leave a blank line between every section and between separate points within a section — never write dense, back-to-back paragraphs.
-Tone: energetic, encouraging, like a coach who believes in them — not corporate or robotic.
+Tone: encouraging, like a coach who believes in them — not corporate or robotic.
 
 FORMAT YOUR OUTPUT EXACTLY LIKE THIS (keep the blank lines between sections exactly as shown):
 
@@ -991,9 +991,10 @@ Hey [First Name] 👋
 
 [Optional 2nd achievement] — [why it fits, 1-2 lines]
 
-✍️ Your move:
-[One specific, energizing question or micro-task]
+✅ Try this next:
+[One concrete question or micro-task, tied to a specific achievement — plain language, no hype]
 """
+
         question_prompt=analysis_prompt(achieves,refs,question,personal_info,instruction_prompt)
             
         if question_prompt:

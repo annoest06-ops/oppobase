@@ -1,25 +1,308 @@
-ready
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Scholarship Dashboard - Opportunity Base</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
+
+        h1, h2, h3, h4, h5,
+        .navbar-brand,
+        legend {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+
+        .navbar-brand-accent {
+            color: #F5A623;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 45px auto;
+        }
+
+        .page-heading {
+            color: #2B4C7E;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .page-description {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        legend {
+            color: #2B4C7E;
+            font-size: 1.3rem;
+            font-weight: 600;
+            float: none;
+            width: auto;
+            padding: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .select-description {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+
+        .scholarship-option {
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .scholarship-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            width: 100%;
+            padding: 1.2rem;
+            background-color: #F7F8FA;
+            border: 1px solid #DDE2E8;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .scholarship-label:hover {
+            border-color: #2B4C7E;
+            box-shadow: 0 3px 12px rgba(43, 76, 126, 0.08);
+        }
+
+        .scholarship-radio {
+            margin-top: 0.2rem;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            accent-color: #2B4C7E;
+        }
+
+        .scholarship-info {
+            flex: 1;
+        }
+
+        .scholarship-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #2B4C7E;
+            margin-bottom: 0.45rem;
+        }
+
+        .scholarship-id {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-right: 0.5rem;
+        }
+
+        .scholarship-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.55rem;
+        }
+
+        .meta-badge {
+            display: inline-block;
+            background-color: #ffffff;
+            border: 1px solid #E1E5EA;
+            border-radius: 20px;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.8rem;
+            color: #555b63;
+        }
+
+        .meta-badge strong {
+            color: #2B4C7E;
+        }
+
+        .btn-primary {
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+            border-radius: 8px;
+            padding: 0.7rem 1.6rem;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #1F3A61;
+            border-color: #1F3A61;
+        }
+
+        .back-button {
+            color: #2B4C7E;
+            border: 1px solid #2B4C7E;
+            background-color: #ffffff;
+            border-radius: 8px;
+        }
+
+        .back-button:hover {
+            color: #ffffff;
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+        }
+
+        .empty-message {
+            background-color: #F7F8FA;
+            border: 1px dashed #D7DCE2;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        @media (max-width: 576px) {
+            .main-container {
+                margin: 25px auto;
+            }
+
+            .dashboard-card {
+                padding: 1.25rem;
+            }
+
+            .scholarship-label {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
 <body>
-    <h1>Scholarship Dashboard</h1><br><br>
 
-    <button> <a href="{{url_for('user_dash')}}">back</a></button><br>
+    <!-- Opportunity Base Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span class="navbar-brand-accent">Opportunity</span> Base
+            </a>
+        </div>
+    </nav>
 
-    <form action="/schol_dash" method="POST">
-        <fieldset>
-            <legend>Scholarships</legend>
+    <div class="container main-container">
 
-            <p>Select a scholarship</p><br><br>
+        <!-- Back Button -->
+        <div class="mb-3">
+            <button type="button" class="btn back-button">
+                <a href="{{url_for('user_dash')}}"
+                   class="text-decoration-none"
+                   style="color: inherit;">
+                    ← Back to Dashboard
+                </a>
+            </button>
+        </div>
 
-            {% if schol_summary %}
-                {% for sum in schol_summary %}
-                    <input type="radio" name="schol_id" value="{{ sum.scholar_id }}" required>
-                    {{ sum.scholar_id }} - {{ sum.title }} - {{ sum.deadline }} - {{ sum.location }} <br><br>
-                {% endfor %}
-            {% endif %}
+        <!-- Page Heading -->
+        <h1 class="page-heading">Scholarship Dashboard</h1>
 
-            <button type="submit">Select</button>
-        </fieldset>
-    </form>
+        <p class="page-description">
+            Explore the available scholarships and select one to continue.
+        </p>
+
+        <!-- Scholarships Card -->
+        <div class="dashboard-card">
+
+            <form action="/schol_dash" method="POST">
+
+                <fieldset>
+
+                    <legend>Scholarships</legend>
+
+                    <p class="select-description">
+                        Select a scholarship to view its details and continue
+                        with your application.
+                    </p>
+
+                    {% if schol_summary %}
+
+                        {% for sum in schol_summary %}
+
+                            <div class="scholarship-option">
+
+                                <label class="scholarship-label">
+
+                                    <input
+                                        type="radio"
+                                        name="schol_id"
+                                        value="{{ sum.scholar_id }}"
+                                        required
+                                        class="scholarship-radio"
+                                    >
+
+                                    <div class="scholarship-info">
+
+                                        <div class="scholarship-title">
+                                            <span class="scholarship-id">
+                                                {{ sum.scholar_id }}
+                                            </span>
+                                            {{ sum.title }}
+                                        </div>
+
+                                        <div class="scholarship-meta">
+
+                                            <span class="meta-badge">
+                                                <strong>Deadline:</strong>
+                                                {{ sum.deadline }}
+                                            </span>
+
+                                            <span class="meta-badge">
+                                                <strong>Location:</strong>
+                                                {{ sum.location }}
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                    <div class="d-flex justify-content-end mt-4">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Select Scholarship →
+                        </button>
+
+                    </div>
+
+                </fieldset>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </body>
 </html>
+

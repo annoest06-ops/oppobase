@@ -1,39 +1,133 @@
-ready
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Content - Opportunity Base</title>
 
-<h1>Create Content page</h1>    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<p>create content part</p>
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
+        h1, h2, h3, h4, h5, .navbar-brand, legend {
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+        .admin-badge {
+            background-color: #F5A623;
+            color: #22262B;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        .btn-primary {
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+        }
+        .btn-primary:hover {
+            background-color: #1F3A61;
+            border-color: #1F3A61;
+        }
+        .btn-outline-back {
+            border-color: #2B4C7E;
+            color: #2B4C7E;
+        }
+        .btn-outline-back:hover {
+            background-color: #2B4C7E;
+            color: #fff;
+        }
+        .content-card {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        legend {
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #2B4C7E;
+            margin-bottom: 1rem;
+            float: none;
+        }
+        textarea {
+            resize: vertical;
+        }
+    </style>
+</head>
 
-   <button> <a href="{{url_for('admin_dash')}}">back</a></button><br>
-<form method="POST" action="/new_content">
+<body>
 
-    <fieldset>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('admin_dash') }}">
+                <span style="color:#F5A623;">Opportunity</span> Base
+                <span class="admin-badge">ADMIN</span>
+            </a>
+        </div>
+    </nav>
 
-        <legend>publish content</legend>
+    <div class="container">
 
-        <label>Topic Number:</label>
-        <input type="text" name="topic_no"><br><br>
+        <div class="mt-3">
+            <a href="{{ url_for('admin_dash') }}" class="btn btn-outline-back">&larr; Back</a>
+        </div>
 
-        <label>Topic Name:</label>
-        <input type="text" name="topic_name"><br><br>
+        <div class="content-card">
+            <h3 class="mb-1">Create Content</h3>
+            <p class="text-muted mb-4">create content part</p>
 
-        <label>Body(content):</label><br>
-        <textarea name="content" rows="20" cols="70"></textarea><br><br>
+            <form method="POST" action="/new_content">
 
-        <label>example status</label>
-        <select name="example">
-            <option value="available">Available</option>
-            <option value="none">None</option>
-        </select><br><br>
+                <fieldset>
+                    <legend>Publish Content</legend>
 
-        {% if message %}
-            <p style="color: red;">{{ message }}</p>
-        {% endif %}
+                    <div class="mb-3">
+                        <label class="form-label">Topic Number:</label>
+                        <input type="text" name="topic_no" class="form-control">
+                    </div>
 
-        <button type="submit">Publish</button>
+                    <div class="mb-3">
+                        <label class="form-label">Topic Name:</label>
+                        <input type="text" name="topic_name" class="form-control">
+                    </div>
 
-    </fieldset>
-</form>
+                    <div class="mb-3">
+                        <label class="form-label">Body (content):</label>
+                        <textarea name="content" rows="12" class="form-control"></textarea>
+                    </div>
 
+                    <div class="mb-3">
+                        <label class="form-label">Example status</label>
+                        <select name="example" class="form-select">
+                            <option value="available">Available</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+
+                    {% if message %}
+                        <p class="text-danger">{{ message }}</p>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary w-100">Publish</button>
+
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+
+</body>
 </html>

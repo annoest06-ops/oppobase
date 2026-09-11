@@ -1,30 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Opportunity Base</title>
 
-<html>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <style>
+        body {
+            background-color: #F7F8FA;
+            font-family: 'Inter', sans-serif;
+            color: #22262B;
+        }
+        h1, h2, h3, h4, h5, .navbar-brand, legend {
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar-custom {
+            background-color: #2B4C7E;
+        }
+        .btn-primary {
+            background-color: #2B4C7E;
+            border-color: #2B4C7E;
+        }
+        .btn-primary:hover {
+            background-color: #1F3A61;
+            border-color: #1F3A61;
+        }
+        .login-card {
+            max-width: 420px;
+            margin: 60px auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        fieldset {
+            border: none;
+            padding: 0;
+        }
+        legend {
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: #2B4C7E;
+            margin-bottom: 1rem;
+            float: none;
+        }
+    </style>
+</head>
 
 <body>
 
-    <h1>Login page</h1><br><br>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span style="color:#F5A623;">Opportunity</span> Base
+            </a>
+        </div>
+    </nav>
 
-    <form action="/login" method="POST">
+    <div class="container">
+        <div class="login-card">
 
-        <fieldset>
-            <legend>Login</legend>
+            <form action="/login" method="POST">
 
-            <label>Username:</label>
-            <input type="text" name="username" placeholder="enter username"><br><br>
+                <fieldset>
+                    <legend>Login</legend>
 
-            <label>Password:</label>
-            <input type="password" name="passcode" placeholder="enter password"><br><br>
+                    <div class="mb-3">
+                        <label class="form-label">Username:</label>
+                        <input type="text" name="username" class="form-control" placeholder="enter username">
+                    </div>
 
-            <button type="submit" name="action" value="login">login</button>
+                    <div class="mb-3">
+                        <label class="form-label">Password:</label>
+                        <input type="password" name="passcode" class="form-control" placeholder="enter password">
+                    </div>
 
-            {% if message %}
-                <p style="color: red;">{{ message }}</p>
-            {% endif %}
+                    <button type="submit" name="action" value="login" class="btn btn-primary w-100">Login</button>
 
-        </fieldset>
-    </form>
+                    {% if message %}
+                        <p class="text-danger mt-3 mb-0">{{ message }}</p>
+                    {% endif %}
+
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+
 </body>
-
 </html>
