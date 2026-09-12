@@ -32,6 +32,14 @@ def close_db_pool():
 app = Flask(__name__)
 app.secret_key=SECRET_KEY
 
+@app.route('/')
+def home():
+    return redirect(url_for('sign_in'))
+
+@app.route('/health')
+def check_health():
+    return "OK", 200
+
 @app.route('/login', methods=['POST', 'GET'])
 def sign_in():
 
