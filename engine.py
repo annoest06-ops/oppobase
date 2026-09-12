@@ -19,7 +19,7 @@ def analysis_prompt(achievments,reference,question,personal_detail,instruction_p
     #of which it can even stay outside the function
   try:
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         contents=instruction_prompt,
         config=types.GenerateContentConfig(
             temperature=0.7,
