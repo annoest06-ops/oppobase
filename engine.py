@@ -8,7 +8,7 @@ load_dotenv()
 GEMINI_API_KEY=os.getenv('GEMINI_API_KEY')
 
 client = genai.Client(api_key=GEMINI_API_KEY, vertexai=False)
-print(repr(GEMINI_API_KEY))
+
 
 #here  is prompt that instruct every things
 # note: in the prompt include achievments,reference,question,personal_detail
