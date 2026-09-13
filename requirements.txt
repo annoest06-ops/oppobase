@@ -1,5 +1,4 @@
 Flask
 psycopg2-binary
 anthropic
-google-genai
 gunicorn
